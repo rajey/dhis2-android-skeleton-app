@@ -78,14 +78,24 @@ public class EnrollmentFormService {
                         .trackedEntityAttributeValues
                         .value(trackedEntityAttribute.uid(), enrollmentRepository.get().trackedEntityInstance());
 
+                String value = null;
+
+                if (attRepository.exists()) {
+                    value = attRepository.get().value();
+                }
+
+                if(trackedEntityAttribute.generated()) {
+                    value = Sdk.d2().trackedEntityModule().reservedValueManager.getValue(trackedEntityAttribute.uid(), null);
+                }
+
                 FormField programFormField = new FormField(
                         trackedEntityAttribute.uid(),
                         trackedEntityAttribute.optionSet() != null ? trackedEntityAttribute.optionSet().uid() : null,
                         trackedEntityAttribute.valueType(),
                         trackedEntityAttribute.formName(),
-                        attRepository.exists() ? attRepository.get().value() : null,
+                        value,
                         trackedEntityAttribute.optionSet() != null ? trackedEntityAttribute.optionSet().code() : null,
-                        true,
+                        !trackedEntityAttribute.generated(),
                         null);
 
                 fieldMap.put(programAttribute.uid(), programFormField);
