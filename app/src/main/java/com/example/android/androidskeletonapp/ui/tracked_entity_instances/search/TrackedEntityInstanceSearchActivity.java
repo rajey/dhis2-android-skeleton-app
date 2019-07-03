@@ -5,11 +5,24 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.lifecycle.LiveData;
+import androidx.paging.PagedList;
+
 import com.example.android.androidskeletonapp.R;
 import com.example.android.androidskeletonapp.ui.base.ListActivity;
 import com.example.android.androidskeletonapp.ui.tracked_entity_instances.TrackedEntityInstanceAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+
+import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
+import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
+import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQuery;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class TrackedEntityInstanceSearchActivity extends ListActivity {
 
@@ -44,6 +57,48 @@ public class TrackedEntityInstanceSearchActivity extends ListActivity {
     }
 
     private void searchTrackedEntityInstances() {
-        // TODO Search TEIs
+        recyclerView.setAdapter(adapter);
+
+        // TODO Get list of SEARCH root organisation units
+        List<OrganisationUnit> organisationUnits = new ArrayList<>();
+
+        // TODO Get first program with registration
+        Program program = null;
+
+        // TODO Get TrackedEntityAttribute with name equal to "Malaria patient id"
+        TrackedEntityAttribute attribute = null;
+
+        List<String> organisationUids = new ArrayList<>();
+        if (!organisationUnits.isEmpty()) {
+            organisationUids = UidsHelper.getUidsList(organisationUnits);
+        }
+
+        TrackedEntityInstanceQuery query = TrackedEntityInstanceQuery.builder()
+                // TODO Filter by organisationUnits in DESCENDANT mode
+
+                // TODO Filter by program
+
+                // TODO Use "filter" property to filter the previous attribute by "like=a"
+
+                .pageSize(15)
+                .paging(true)
+                .page(1)
+                .build();
+
+        getTrackedEntityInstanceList(query).observe(this, trackedEntityInstancePagedList -> {
+            adapter.submitList(trackedEntityInstancePagedList);
+            downloadDataText.setVisibility(View.GONE);
+            notificator.setVisibility(View.GONE);
+            progressBar.setVisibility(View.GONE);
+            findViewById(R.id.searchNotificator).setVisibility(
+                    trackedEntityInstancePagedList.isEmpty() ? View.VISIBLE : View.GONE);
+        });
+    }
+
+    private LiveData<PagedList<TrackedEntityInstance>> getTrackedEntityInstanceList(TrackedEntityInstanceQuery query) {
+        // TODO Use trackedEntityInstanceQuery to return a pagedList with onlineFirst() strategy
+        //  paged by 10
+
+        return null;
     }
 }
