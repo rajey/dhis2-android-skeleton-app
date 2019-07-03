@@ -56,7 +56,9 @@ public class EnrollmentFormActivity extends AppCompatActivity {
     }
 
     private void createAttributeValue(String attributeUid, String value) throws D2Error {
-        // TODO Create attribute value
+        Sdk.d2().trackedEntityModule().trackedEntityAttributeValues
+                .value(attributeUid, getIntent().getStringExtra(IntentExtra.TEI_UID.name()))
+                .set(value);
     }
 
     @Override
