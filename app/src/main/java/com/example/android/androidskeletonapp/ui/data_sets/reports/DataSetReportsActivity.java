@@ -10,7 +10,9 @@ import com.example.android.androidskeletonapp.R;
 import com.example.android.androidskeletonapp.data.Sdk;
 import com.example.android.androidskeletonapp.ui.base.ListActivity;
 
+import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.datavalue.DataSetReport;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 
 public class DataSetReportsActivity extends ListActivity {
 
@@ -25,8 +27,19 @@ public class DataSetReportsActivity extends ListActivity {
         DataSetReportsAdapter adapter = new DataSetReportsAdapter();
         recyclerView.setAdapter(adapter);
 
-        // TODO Get a LiveData for a PagedList from dataSetReports repository (dataValueModule)
-        //  Pass this LiveData to the dataSetAdapter
-        //  HINT: look at DataSetsActivity as a template
+        // Get test organisation unit
+        OrganisationUnit orgUnit = Sdk.d2().organisationUnitModule()
+                .organisationUnits.byLevel().eq(4).get().get(0);
+
+        String orgUnitUid = UidsHelper.getUidOrNull(orgUnit);
+
+        LiveData<PagedList<DataSetReport>> dataSetReportListPage = Sdk.d2().dataValueModule().dataSetReports
+                .byOrganisationUnitUid().eq(orgUnitUid).byPeriod().eq("201903").getPaged(10);
+
+        dataSetReportListPage.observe(this, dataSetReports -> {
+            adapter.submitList(dataSetReports);
+            findViewById(R.id.dataSetReportsNotificator)
+                    .setVisibility(dataSetReports.isEmpty() ? View.VISIBLE : View.GONE);
+        });
     }
 }
